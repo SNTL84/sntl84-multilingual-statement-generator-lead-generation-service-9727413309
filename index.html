@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="author" content="SNTL 2784 · desidevioper.com"/>
+<title>SNTL84 · Client Conversion Statements · Multilingual Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d0d0d;color:#e8e8e8;font-family:'Inter',sans-serif;min-height:100vh;padding:24px 16px 48px}
+  .container{max-width:900px;margin:0 auto}
+  .header{text-align:center;padding:32px 0 24px}
+  .brand{font-size:11px;letter-spacing:2px;color:#c9a84c;text-transform:uppercase;margin-bottom:8px}
+  h1{font-size:clamp(20px,4vw,28px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#666;margin-bottom:24px}
+  .stats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+  .stat{background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:12px 20px;text-align:center;min-width:90px}
+  .stat-num{font-size:22px;font-weight:700;color:#c9a84c}
+  .stat-lbl{font-size:11px;color:#666;margin-top:2px;letter-spacing:0.5px}
+  .panel{background:#111;border:1px solid #1e1e1e;border-radius:12px;padding:20px;margin-bottom:16px}
+  .panel-title{font-size:12px;font-weight:600;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+  .lang-item{background:#1a1a1a;border:1px solid #222;border-radius:6px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px}
+  .lang-name{color:#ccc}
+  .lang-status{width:8px;height:8px;border-radius:50%;background:#2a2a2a;flex-shrink:0}
+  .lang-status.done{background:#4caf50}
+  .lang-status.error{background:#f44336}
+  .lang-status.active{background:#c9a84c;animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .progress-wrap{margin-bottom:20px}
+  .progress-bar{height:4px;background:#1e1e1e;border-radius:2px;overflow:hidden;margin-bottom:8px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#c9a84c,#e8c96e);width:0%;transition:width 0.4s ease;border-radius:2px}
+  .progress-meta{display:flex;justify-content:space-between;font-size:11px;color:#555}
+  .api-row{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .api-input{flex:1;min-width:200px;background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:10px 14px;color:#e8e8e8;font-size:13px;font-family:inherit;outline:none;transition:border-color 0.2s}
+  .api-input:focus{border-color:#c9a84c}
+  .api-hint{font-size:11px;color:#555;margin-top:4px}
+  .api-hint a{color:#c9a84c;text-decoration:none}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all 0.2s;letter-spacing:0.3px}
+  .btn-primary{background:#c9a84c;color:#000}
+  .btn-primary:hover{background:#e8c96e}
+  .btn-primary:disabled{background:#2a2a2a;color:#555;cursor:not-allowed}
+  .btn-secondary{background:#1a1a1a;border:1px solid #333;color:#ccc}
+  .btn-secondary:hover{border-color:#555}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-top:12px;display:none}
+  .msg-error{background:#1a0808;border:1px solid #4a1010;color:#ff6b6b}
+  .msg-success{background:#081a09;border:1px solid #104a12;color:#6bff70}
+  .note{background:#141008;border:1px solid #2a2010;border-radius:8px;padding:14px;font-size:12px;color:#888;margin-bottom:20px;line-height:1.6}
+  .note strong{color:#c9a84c}
+  .status-line{font-size:12px;color:#666;text-align:center;padding:8px 0}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="brand">SNTL84 · desidevloper.com</div>
+    <h1>Client Conversion Statements<br>Multilingual Generator</h1>
+    <div class="subtitle">29 statements · 39 languages · 1,131 translations → .xlsx</div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">29</div><div class="stat-lbl">Statements</div></div>
+      <div class="stat"><div class="stat-num">39</div><div class="stat-lbl">Languages</div></div>
+      <div class="stat"><div class="stat-num" id="doneCount">0</div><div class="stat-lbl">Completed</div></div>
+      <div class="stat"><div class="stat-num" id="totalTranslations">0</div><div class="stat-lbl">Translations</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Languages</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-meta"><span id="statusLine">Ready to generate</span><span id="pctLabel">0%</span></div>
+    </div>
+    <div class="grid" id="langGrid"></div>
+  </div>
+
+  <div class="note">
+    <strong>Note:</strong> Translation uses Claude AI via the Anthropic API. Some rare/regional languages (Santhali, Bolo, Pali, Dzongkha, etc.) may produce approximate translations — verify with a native speaker for critical use. Languages processed one at a time; takes ~3–5 minutes total.
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Anthropic API Key</div>
+    <div class="api-row">
+      <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off"/>
+    </div>
+    <div class="api-hint">Required · Never stored · Used client-side only · <a href="https://console.anthropic.com/settings/keys" target="_blank">Get your key ↗</a></div>
+    <div id="errorMsg" class="msg msg-error"></div>
+    <div id="successMsg" class="msg msg-success"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="generateBtn" onclick="startGeneration()">▶ Generate All Translations</button>
+      <button class="btn btn-secondary" id="downloadBtn" onclick="downloadExcel()" style="display:none">↓ Download Excel (.xlsx)</button>
+      <button class="btn btn-secondary" id="resetBtn" onclick="resetAll()" style="display:none">↺ Reset &amp; Start Over</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const LANGUAGES = [
+  "Hindi","Bengali","Telugu","Marathi","Tamil","Urdu","Gujarati","Kannada",
+  "Malayalam","Odia","Punjabi","Assamese","Maithili","Santali","Kashmiri",
+  "Nepali","Sindhi","Konkani","Dogri","Manipuri","Bodo","Sanskrit",
+  "Arabic","Chinese (Simplified)","Spanish","French","Portuguese","Russian",
+  "Japanese","Korean","German","Italian","Turkish","Persian (Farsi)",
+  "Swahili","Thai","Vietnamese","Indonesian","Pali"
+];
+
+const STATEMENTS = [
+  {id:1,cat:"Trust & Credibility",text:"We've been in business for over [X] years, serving clients across [region/industry].",note:"Replace [X] and [region/industry]"},
+  {id:2,cat:"Trust & Credibility",text:"Our track record speaks for itself — [X]% of our clients return for repeat business.",note:"Replace [X] with actual stat"},
+  {id:3,cat:"Trust & Credibility",text:"We are certified by [certification body], ensuring the highest standards in everything we deliver.",note:"Replace [certification body]"},
+  {id:4,cat:"Value Proposition",text:"What sets us apart is our commitment to [unique differentiator] — something our clients consistently highlight.",note:"Replace [unique differentiator]"},
+  {id:5,cat:"Value Proposition",text:"We don't just sell products — we build long-term partnerships focused on your growth.",note:""},
+  {id:6,cat:"Value Proposition",text:"Every solution we offer is tailored specifically to your needs, not a one-size-fits-all approach.",note:""},
+  {id:7,cat:"Objection Handling",text:"I understand your concern about pricing — let me show you the value behind every rupee you invest.",note:"Change 'rupee' to local currency"},
+  {id:8,cat:"Objection Handling",text:"Many of our best clients had the same hesitation initially — here's what changed their mind.",note:""},
+  {id:9,cat:"Objection Handling",text:"Let's compare what you're currently spending versus what you'll gain with us — the numbers tell a clear story.",note:""},
+  {id:10,cat:"Closing Statements",text:"Based on everything we've discussed, I believe we're the right fit for your business — shall we move forward?",note:""},
+  {id:11,cat:"Closing Statements",text:"I'd like to propose we start with a pilot project — low risk, high insight, and a chance to prove our value.",note:""},
+  {id:12,cat:"Closing Statements",text:"We have a limited window for onboarding new clients this quarter — I'd love to secure your spot.",note:""},
+  {id:13,cat:"Follow-Up",text:"I wanted to follow up on our last conversation — have you had a chance to review the proposal?",note:""},
+  {id:14,cat:"Follow-Up",text:"I'm following up because I genuinely believe this opportunity is time-sensitive for your business.",note:""},
+  {id:15,cat:"Follow-Up",text:"Since we last spoke, we've had two more clients achieve [specific result] — I thought you'd want to know.",note:"Replace [specific result]"},
+  {id:16,cat:"Social Proof",text:"Companies like [client name] have seen a [X]% improvement in [metric] after working with us.",note:"Replace placeholders"},
+  {id:17,cat:"Social Proof",text:"We've been featured in [publication/platform] for our innovative approach to [topic].",note:"Replace placeholders"},
+  {id:18,cat:"Social Proof",text:"Our clients don't just stay — they refer us. Over [X]% of our new business comes from referrals.",note:"Replace [X]"},
+  {id:19,cat:"Urgency & Scarcity",text:"This pricing is valid only until [date] — after that, our rates go up by [X]%.",note:"Replace placeholders"},
+  {id:20,cat:"Urgency & Scarcity",text:"We only take on [X] new clients per month to ensure quality — and we have [Y] spots left.",note:"Replace placeholders"},
+  {id:21,cat:"Urgency & Scarcity",text:"If you wait, your competitor might move first — this window of advantage won't stay open long.",note:""},
+  {id:22,cat:"Empathy & Understanding",text:"I hear you — and I want to make sure we address every concern before you make a decision.",note:""},
+  {id:23,cat:"Empathy & Understanding",text:"Your business deserves a partner who truly understands the challenges you face in [industry].",note:"Replace [industry]"},
+  {id:24,cat:"Empathy & Understanding",text:"We've worked with businesses in similar situations — here's how we helped them turn things around.",note:""},
+  {id:25,cat:"ROI & Results",text:"On average, our clients see a return of [X]x their investment within [timeframe].",note:"Replace placeholders"},
+  {id:26,cat:"ROI & Results",text:"The cost of not acting now could be far greater than the investment you're considering.",note:""},
+  {id:27,cat:"ROI & Results",text:"Let me walk you through a quick ROI calculation specific to your business size and goals.",note:""},
+  {id:28,cat:"Relationship Building",text:"I'm not here to make a one-time sale — I'm here to be a resource you can count on for years.",note:""},
+  {id:29,cat:"Relationship Building",text:"My goal is simple: to make sure you're so happy with the results that you'll want to tell others.",note:""}
+];
+
+let translationsData = {};
+let isRunning = false;
+
+function initGrid() {
+  const grid = document.getElementById('langGrid');
+  grid.innerHTML = '';
+  LANGUAGES.forEach(lang => {
+    const div = document.createElement('div');
+    div.className = 'lang-item';
+    div.id = 'lang-' + lang.replace(/[^a-z0-9]/gi,'_');
+    div.innerHTML = `<span class="lang-name">${lang}</span><span class="lang-status" id="status-${lang.replace(/[^a-z0-9]/gi,'_')}"></span>`;
+    grid.appendChild(div);
+  });
+}
+
+function setLangStatus(lang, state) {
+  const el = document.getElementById('status-' + lang.replace(/[^a-z0-9]/gi,'_'));
+  if (el) { el.className = 'lang-status ' + state; }
+}
+
+async function startGeneration() {
+  if (isRunning) return;
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+    document.getElementById('apiKeyInput').style.borderColor = '#f44336';
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').textContent = '⚠ Please enter a valid Anthropic API key (starts with sk-ant-)';
+    return;
+  }
+  document.getElementById('apiKeyInput').style.borderColor = '#222';
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+  document.getElementById('generateBtn').disabled = true;
+  isRunning = true;
+  translationsData = {};
+
+  const errors = [];
+
+  for (let i = 0; i < LANGUAGES.length; i++) {
+    const lang = LANGUAGES[i];
+    setLangStatus(lang, 'active');
+    document.getElementById('statusLine').textContent = `Translating: ${lang} (${i+1}/${LANGUAGES.length})`;
+
+    try {
+      const prompt = `Translate the following ${STATEMENTS.length} sales/business statements into ${lang}. Return ONLY a JSON array of strings, one translation per statement, in the same order. Do not include any explanation, numbering, or extra text — just the JSON array.\n\nStatements:\n${STATEMENTS.map((s,idx)=>`${idx+1}. ${s.text}`).join('\n')}`;
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-3-haiku-20240307',
+          max_tokens: 4096,
+          messages: [{role:'user', content: prompt}]
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || 'API error');
+      }
+
+      const data = await res.json();
+      const raw = data.content[0].text.trim();
+      const jsonMatch = raw.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('No JSON array found in response');
+      const translations = JSON.parse(jsonMatch[0]);
+      if (!Array.isArray(translations) || translations.length < STATEMENTS.length) throw new Error('Incomplete translation array');
+
+      translationsData[lang] = translations;
+      setLangStatus(lang, 'done');
+
+      const done = i + 1;
+      document.getElementById('doneCount').textContent = done;
+      document.getElementById('totalTranslations').textContent = done * STATEMENTS.length;
+      const pct = Math.round((done / LANGUAGES.length) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('pctLabel').textContent = pct + '%';
+
+    } catch(e) {
+      console.error(lang, e);
+      errors.push(lang);
+      translationsData[lang] = STATEMENTS.map(s => `[Translation error: ${s.text}]`);
+      setLangStatus(lang, 'error');
+    }
+
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  document.getElementById('statusLine').textContent = 'All languages processed!';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('pctLabel').textContent = '100%';
+
+  if (errors.length > 0) {
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').textContent = `⚠ ${errors.length} language(s) had errors: ${errors.join(', ')}. Placeholder text inserted — retry those manually.`;
+  }
+
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('successMsg').textContent = `✓ ${LANGUAGES.length - errors.length} languages translated · ${(LANGUAGES.length - errors.length) * 29} statements ready for download`;
+  
+  document.getElementById('downloadBtn').style.display = 'flex';
+  document.getElementById('resetBtn').style.display = 'flex';
+  document.getElementById('generateBtn').disabled = false;
+  isRunning = false;
+}
+
+function downloadExcel() {
+  const wb = XLSX.utils.book_new();
+  const masterData = [
+    ["#", "Category", "Original (English)", "Note", ...LANGUAGES]
+  ];
+  STATEMENTS.forEach((stmt, i) => {
+    const row = [stmt.id, stmt.cat, stmt.text, stmt.note];
+    LANGUAGES.forEach(lang => {
+      row.push(translationsData[lang]?.[i] || '');
+    });
+    masterData.push(row);
+  });
+  const masterWs = XLSX.utils.aoa_to_sheet(masterData);
+  masterWs['!cols'] = [
+    {wch:4},{wch:16},{wch:80},{wch:50},
+    ...LANGUAGES.map(()=>({wch:60}))
+  ];
+  XLSX.utils.book_append_sheet(wb, masterWs, "All Languages");
+  LANGUAGES.forEach(lang => {
+    const wsData = [
+      ["#", "Category", `Statement (${lang})`, "Original (English)", "Note"]
+    ];
+    STATEMENTS.forEach((stmt, i) => {
+      wsData.push([stmt.id, stmt.cat, translationsData[lang]?.[i] || '', stmt.text, stmt.note]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = [{wch:4},{wch:16},{wch:70},{wch:70},{wch:50}];
+    const sheetName = lang.length > 31 ? lang.substring(0,28)+'...' : lang;
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
+  XLSX.writeFile(wb, "SNTL84_Client_Conversion_Statements_Multilingual.xlsx");
+}
+
+function resetAll() {
+  isRunning = false;
+  translationsData = {};
+  document.getElementById('doneCount').textContent = '0';
+  document.getElementById('totalTranslations').textContent = '0';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('pctLabel').textContent = '0%';
+  document.getElementById('statusLine').textContent = 'Ready to generate';
+  document.getElementById('downloadBtn').style.display = 'none';
+  document.getElementById('resetBtn').style.display = 'none';
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+  document.getElementById('generateBtn').disabled = false;
+  document.getElementById('apiKeyInput').style.borderColor = '#222';
+  initGrid();
+}
+
+initGrid();
+</script>
+
+<!-- Brand Credits -->
+<footer style="text-align:center;padding:24px 16px 32px;margin-top:40px;border-top:1px solid #2a2a2a;font-family:'Inter',sans-serif;color:#555;font-size:13px;letter-spacing:0.3px;">
+  <div style="margin-bottom:6px;">
+    Built by <strong style="color:#c9a84c;">SNTL 2784</strong> &nbsp;·&nbsp;
+    <a href="https://desidevioper.com" target="_blank" style="color:#c9a84c;text-decoration:none;">desidevioper.com</a>
+  </div>
+  <div style="margin-bottom:6px;">
+    <a href="https://github.com/3goldenlotusroots-droid/SNTL2784" target="_blank" style="color:#888;text-decoration:none;margin:0 8px;">GitHub</a>
+    <a href="https://www.linkedin.com/in/sntl2784" target="_blank" style="color:#888;text-decoration:none;margin:0 8px;">LinkedIn</a>
+    <a href="https://wa.me/919727413309" target="_blank" style="color:#888;text-decoration:none;margin:0 8px;">WhatsApp</a>
+    <a href="mailto:3goldenlotusroots@gmail.com" style="color:#888;text-decoration:none;margin:0 8px;">Email</a>
+    <a href="https://aratt.ai/user/@desidevloper" target="_blank" style="color:#888;text-decoration:none;margin:0 8px;">Arrattai</a>
+  </div>
+  <div style="color:#444;font-size:11px;margin-top:8px;">© 2026 SNTL 2784 · All rights reserved</div>
+</footer>
+
+</body>
+</html>
