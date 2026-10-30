@@ -7,6 +7,7 @@
 ---
 
 # 🌎 Multilingual Client Conversion Statement Generator
+For lead generation services, see the contact information in this README.
 
 > **Case Study: 1,131 translation variants generated in one click — replacing days of manual translation work.**
 
@@ -87,3 +88,7 @@ Built by **Milan · SNTL 84** — AI Workflow Developer, Surat, India.
 *Star ⭐ this repo and share with global marketers!*
 
 *Built with ❤️ by Milan · SNTL 84 · Surat, India 🇮🇳*
+
+## Lead Generation Services
+
+Lead generation services: lead-generation-service-9727413309.
